@@ -110,7 +110,7 @@ git------>config-server---------------->config-server
 ------------------------------------------------------------------------------------------
 
 消息总线
-	---spring cloud bus 讲分布式的节点用秦亮的消息代理链接起来.他可以用于广播配置文件的更改或者
+	---spring cloud bus 讲分布式的节点用轻量的消息代理链接起来.他可以用于广播配置文件的更改或者
 		服务之间的通讯,也可用于监控,
 	1.广播配置文件的更改
 		在config-client 请求bus/refresh 然后不需要重启服务器,即可获得配置文件的更改后的信息
@@ -153,63 +153,11 @@ docker部署 springboot项目
 
 
 
-
-
-
-			
-
-
-
-
-
 在高并发情况下,由于来不及同步处理,请求堵塞 ,大量的insert update 请求同时到达mysql,
 直接导致无数的行数表锁,最后请求堆积过多,出发too many connections 错误,使用消息队列,我们可以
 异步处理请求,缓解系统压力.
 
 
-
-
-
-
-
-					
-							
-							
-							
-							BigDecimal amount = BigDecimal.valueOf(Long.parseLong((String) ruleMap.get("rule")));
-							String assetKey = "integral_asset"+taskId+"_" + userId;
-							//判断是否是一直可以领取状态
-							 String assetValue = jedisClient.get(assetKey);
-					        if (assetValue != null && (userId.toString()).equals(assetValue)) {
-					        	vo.setFlagStatus(2);//未领取
-					        }else {
-					    		// 计算定期在投金额
-								BigDecimal regularSumAmount = incomeCalService.calregularAmtSum(userId, ProdType.REGULAR.getCode());
-								// 计算新手标在投金额
-								BigDecimal noviceSumAmount = incomeCalService.calregularAmtSum(userId, ProdType.NEWSTAND.getCode());
-								// 计算持有本金（在投金额）
-								BigDecimal currentInvestAmount = regularSumAmount.add(noviceSumAmount);
-								
-								if(currentInvestAmount.compareTo(amount)>=0) {
-									vo.setFlagStatus(2);//未领取
-									 String value = jedisClient.get(redisKey);
-								     if (value != null && (taskId+"_" + userId).equals(value)) {
-							        	vo.setFlagStatus(3);//已领取
-							        }else {
-							    		//达到过 就一直可以领取状态
-										jedisClient.set(assetKey,userId.toString());
-							        }
-								}else {
-									 String value = jedisClient.get(redisKey);
-								    if (value != null && (taskId+"_" + userId).equals(value)) {
-								    	vo.setFlagStatus(3);//已领取
-									}else {
-										vo.setFlagStatus(1);
-									}
-									
-								}
-					        }
-					
 
 
 
